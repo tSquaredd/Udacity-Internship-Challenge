@@ -3,6 +3,7 @@ package com.tsquaredapplications.udacityinternshipchallenge;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,9 @@ import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -43,14 +47,25 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactA
     @Override
     public void onBindViewHolder(ContactAdapterViewHolder holder, int position) {
 
+
         Contact currentContact = mContactList.get(position);
         Picasso.with(mContext).load(currentContact.getAvatar()).into(holder.image);
         String name = currentContact.getFirstName() + " " + currentContact.getLastName();
         holder.name.setText(name);
         holder.email.setText(currentContact.getEmail());
         holder.company.setText(currentContact.getCompany());
-        holder.startDate.setText(currentContact.getStartDate());
-        holder.bio.setText(currentContact.getBio());
+
+        DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        try{
+            String startDate = simpleDateFormat.parse(currentContact.getStartDate()).toString();
+            startDate = "Start Date: " + startDate.substring(0, 10) + ", " + startDate.substring(startDate.length() - 5, startDate.length());
+            holder.startDate.setText(startDate);
+        }catch(java.text.ParseException e){
+            e.printStackTrace();
+        }
+
+        String bio = "Bio: " + currentContact.getBio();
+        holder.bio.setText(bio);
 
 
     }

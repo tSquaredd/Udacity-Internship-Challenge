@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private ContactAdapter mContactAdapter;
+    private static final String BASE_URL = "https://s3-us-west-2.amazonaws.com/udacity-mobile-interview/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://s3-us-west-2.amazonaws.com/udacity-mobile-interview/")
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -67,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
            @Override
            public void onFailure(Call<List<Contact>> call, Throwable t) {
-
+               // TODO: Better error handling..
+               Toast.makeText(MainActivity.this, "Failed to load contact data", Toast.LENGTH_SHORT).show();
            }
        });
 
