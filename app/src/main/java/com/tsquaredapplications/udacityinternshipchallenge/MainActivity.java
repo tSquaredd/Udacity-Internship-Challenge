@@ -3,10 +3,14 @@ package com.tsquaredapplications.udacityinternshipchallenge;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -42,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mContactAdapter);
 
 
+        // Forces Card Views to snap to position when scrolling through Recycler View
+        SnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(mRecyclerView);
+
 
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -60,8 +68,13 @@ public class MainActivity extends AppCompatActivity {
            public void onResponse(Call<List<Contact>> call, Response<List<Contact>> response) {
                List<Contact> contactList = response.body();
 
-               // On response call setData from ContactAdapter to update data,
-               // in turn this will call notifyDataSetChanged
+               // Sort contact list by first name
+               Collections.sort(contactList, new Comparator<Contact>() {
+                   @Override
+                   public int compare(Contact o1, Contact o2) {
+                       return o1.getFirstName().compareTo(o2.getFirstName());
+                   }
+               });
 
                mContactAdapter.setData(contactList);
 
