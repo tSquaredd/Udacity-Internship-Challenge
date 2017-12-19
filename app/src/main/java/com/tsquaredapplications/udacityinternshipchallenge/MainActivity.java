@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SnapHelper;
 import android.util.Log;
+
 import android.widget.Toast;
 
 import java.util.Collections;
@@ -19,18 +21,22 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private static final String LOG_TAG = MainActivity.class.getName();
 
     private RecyclerView mRecyclerView;
     private ContactAdapter mContactAdapter;
+    private SearchView mSearchView;
+
     private static final String BASE_URL = "https://s3-us-west-2.amazonaws.com/udacity-mobile-interview/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mSearchView = (SearchView)findViewById(R.id.search_view);
 
         mRecyclerView = (RecyclerView)findViewById(R.id.recycler_view);
 
@@ -89,4 +95,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    private void setupSearchView() {
+        mSearchView.setIconifiedByDefault(false);
+        mSearchView.setOnQueryTextListener(this);
+        mSearchView.setSubmitButtonEnabled(true);
+        mSearchView.setQueryHint("Search Here");
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        mContactAdapter.filter(newText);
+        return true;
+    }
+
+
 }

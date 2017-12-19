@@ -3,6 +3,7 @@ package com.tsquaredapplications.udacityinternshipchallenge;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import org.w3c.dom.Text;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +29,7 @@ import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactAdapterViewHolder> {
 
-    private List<Contact> mContactList;
+    private List<Contact> mContactList, mFilterList;
     private Context mContext;
 
     @Override
@@ -48,7 +50,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactA
     public void onBindViewHolder(ContactAdapterViewHolder holder, int position) {
 
 
-        Contact currentContact = mContactList.get(position);
+        Contact currentContact = mFilterList.get(position);
         Picasso.with(mContext).load(currentContact.getAvatar()).into(holder.image);
         String name = currentContact.getFirstName() + " " + currentContact.getLastName();
         holder.name.setText(name);
@@ -102,7 +104,41 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactA
 
     public void setData(List<Contact> data) {
         mContactList = data;
+        mFilterList = new ArrayList<Contact>();
+        mFilterList.addAll(mContactList);
         notifyDataSetChanged();
 
     }
+
+    /**
+     *
+     * Attempting to build a filter to use for searching the contents of the recyclerview
+     */
+
+    public void filter(final String text){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mFilterList.clear();
+
+                if (TextUtils.isEmpty(text)) {
+                    mFilterList.addAll(mContactList);
+                } else {
+
+                    for (Contact currentContact : mContactList) {
+                        if (currentContact.getFirstName().toLowerCase().contains(text.toLowerCase()) ||
+                                currentContact.getLastName().toLowerCase().contains(text.toLowerCase())) {
+                            mFilterList.add(currentContact);
+                        }
+                    }
+                }
+
+                notifyDataSetChanged();
+
+            }
+        }).start();
+    }
+
+
+
 }
